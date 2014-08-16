@@ -27,7 +27,7 @@ var router = function(req, res) {
       handlers.sendOptionsResponse(req, res);
     }
   } else {
-    handlers.sendResponse(res, '', 404);
+    serverHelpers.sendResponse(res, '', 404);
   }
 };
 

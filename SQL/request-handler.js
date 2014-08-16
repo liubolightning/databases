@@ -19,17 +19,31 @@ exports.postMessage = function(req, res) {
         roomname: message.roomname
       };
 
-      saveMessage(chat.message, chat.userid, chat.roomname, function () {
-        serverHelpers.sendResponse(res, message);
+      findRoom(message.roomname, function(err, results){
+        if(!results || !results.length){
+          saveRoom(message.roomname, saveMessage, chat.message, chat.userid, chat.roomname, function () {
+            serverHelpers.sendResponse(res, message);
+          });
+        }else{
+          saveMessage(chat.message, chat.userid, chat.roomname, function () {
+            serverHelpers.sendResponse(res, message);
+          });
+        }
       });
+
+      // saveMessage(chat.message, chat.userid, chat.roomname, function () {
+      //   serverHelpers.sendResponse(res, message);
+      // });
   };
 
+  console.log('POST request.');
   parseData(req, function(_, msg) {
       message = msg;
       findUser(msg.username, function (err, results) {
         // no results/0 results
         if (!results || !results.length) {
           // create the user, then post the message
+          console.log("In parseData: ", results);
           saveUser(message.username, resultsCallback);
         } else {
           // user exists, post the message to this user
