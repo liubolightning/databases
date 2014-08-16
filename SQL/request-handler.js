@@ -16,7 +16,7 @@ exports.postMessage = function(req, res) {
 
   var resultsCallback = function (results) {
       var chat = {
-        message: message.message,
+        message: message.text,
         userid: results[0].userID,
         roomname: message.roomname
       };
@@ -39,6 +39,7 @@ exports.postMessage = function(req, res) {
   };
 
   parseData(req, function(_, msg) {
+    console.log("what is the msg object", msg);
       message = msg;
       findUser(msg.username, function (err, results) {
         // no results/0 results

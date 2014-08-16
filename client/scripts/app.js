@@ -17,7 +17,8 @@ app.fetch = function(){
     contentType: 'application/json',
     success: function(data){
       app.clearMessages();
-      for (var i = 0; i < app.displayLength; i++) {
+      console.log(data);
+      for (var i = 0; i < app.displayLength && i < data.results.length; i++) {
         app.addMessage(data.results[i]);
       }
     },

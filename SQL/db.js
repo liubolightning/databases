@@ -21,13 +21,13 @@ dbConnection.connect();
 
 
 exports.findAllMessages = function(cb){
-  var messageQuery = 'SELECT textValue FROM messages';
+  var messageQuery = 'SELECT name as username, textValue as text, createdAt FROM messages, users WHERE users.userID = messages.userID';
 
   dbConnection.query(messageQuery, function(err, result){
     if(err){
       throw err;
     }else{
-      cb(err, result);
+      cb(err, {results: result});
     }
   });
 };
