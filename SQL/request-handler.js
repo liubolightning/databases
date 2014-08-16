@@ -6,6 +6,8 @@ var saveMessage = db.saveMessage;
 var saveUser = db.saveUser;
 var findMessages = db.findAllMessages;
 var findUser = db.findUser;
+var findRoom = db.findRoom;
+var saveRoom = db.saveRoom;
 
 
 exports.postMessage = function(req, res) {
@@ -15,12 +17,12 @@ exports.postMessage = function(req, res) {
   var resultsCallback = function (results) {
       var chat = {
         message: message.message,
-        userid: results[0].id,
+        userid: results[0].userID,
         roomname: message.roomname
       };
 
       findRoom(message.roomname, function(err, results){
-        if(!results || !results.length){
+        if(results === undefined || results.length === 0){
           saveRoom(message.roomname, saveMessage, chat.message, chat.userid, chat.roomname, function () {
             serverHelpers.sendResponse(res, message);
           });
@@ -36,14 +38,12 @@ exports.postMessage = function(req, res) {
       // });
   };
 
-  console.log('POST request.');
   parseData(req, function(_, msg) {
       message = msg;
       findUser(msg.username, function (err, results) {
         // no results/0 results
         if (!results || !results.length) {
           // create the user, then post the message
-          console.log("In parseData: ", results);
           saveUser(message.username, resultsCallback);
         } else {
           // user exists, post the message to this user

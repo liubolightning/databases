@@ -22,10 +22,8 @@ dbConnection.connect();
 
 exports.findAllMessages = function(cb){
   var messageQuery = 'SELECT textValue FROM messages';
-  console.log("findAllMessages");
 
   dbConnection.query(messageQuery, function(err, result){
-    console.log("query result: ", result);
     if(err){
       throw err;
     }else{
@@ -35,22 +33,19 @@ exports.findAllMessages = function(cb){
 };
 
 exports.findUser = function(username, cb){
-  console.log(typeof username);
-  var userQuery = 'SELECT name FROM users where name = "' + username + '"';
-  console.log("findUser");
+  var userQuery = 'SELECT * FROM users where name = ' + dbConnection.escape(username);
 
   dbConnection.query(userQuery, function(err, result){
     if(err){
       throw err;
     }else{
-      console.log("findUser else statement");
       cb(err, result);
     }
   });
 };
 
 exports.saveUser = function(username, cb){
-  var insertUserQuery = 'INSERT INTO users (name) values (' + username + ')';
+  var insertUserQuery = 'INSERT INTO users (name) values (' + dbConnection.escape(username) + ')';
 
   dbConnection.query(insertUserQuery, function(err, result){
     if(err){
@@ -62,19 +57,19 @@ exports.saveUser = function(username, cb){
 };
 
 exports.saveMessage = function(message, userid, roomname, cb){
-  var findRoomIDQuery = 'SELECT roomID FROM rooms WHERE roomName = ' + roomname;
+  var findRoomIDQuery = 'SELECT roomID FROM rooms WHERE roomName = ' + dbConnection.escape(roomname);
 
   dbConnection.query(findRoomIDQuery, function(err, roomIdArray){
     if(err){
       throw err;
     }else{
-      var insertMessageQuery = 'INSERT INTO messages (textValue, roomID, userID) values (' + message + ', ' + roomIdArray[0] + ', ' + userid + ')';
+      var insertMessageQuery = 'INSERT INTO messages (textValue, roomID, userID) values (' + dbConnection.escape(message) + ', ' + dbConnection.escape(roomIdArray[0].roomID) + ', ' + dbConnection.escape(userid) + ')';
 
       dbConnection.query(insertMessageQuery, function(err){
         if(err){
           throw err;
         }else{
-          cb(message);
+          cb();
         }
       });
     }
@@ -82,19 +77,19 @@ exports.saveMessage = function(message, userid, roomname, cb){
 };
 
 exports.findRoom = function(roomname, cb){
-  var findRoomQuery = 'SELECT roomID from rooms where roomName = ' + roomname;
+  var findRoomQuery = 'SELECT roomID from rooms where roomName = ' + dbConnection.escape(roomname);
 
   dbConnection.query(findRoomQuery, function(err, result){
     if(err){
       throw err;
     }else{
-      cb(result);
+      cb(err, result);
     }
   });
 };
 
 exports.saveRoom = function(roomname, cb){
-  var sameRoomQuery = 'INSERT INTO rooms (roomName) values (' + roomname + ')';
+  var sameRoomQuery = 'INSERT INTO rooms (roomName) values (' + dbConnection.escape(roomname) + ')';
   var args = Array.prototype.slice.call(arguments, 2);
 
   dbConnection.query(sameRoomQuery, function(err, result){
